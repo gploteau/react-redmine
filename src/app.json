@@ -1,0 +1,53 @@
+// Debug: 0, Info: 1, Warn: 2, Error: 3
+{
+  "displayName": "Redmine",
+  "backgroundColor": "#B30E0F",
+  "debugLevel": 0,
+  "defaultColors": {
+    "priorities": {
+      "1": "#d9edf7",
+      "2": "#fff",
+      "3": "#dff0d8",
+      "4": "#fbf8ca",
+      "5": "#f2dede"
+    },
+    "trackers": {
+      "1": "#C20E0E",
+      "2": "#85C049",
+      "3": "#63A7F5"
+    }
+  },
+  "palette": [
+    "#C20E0E",
+    "#85C049",
+    "#63A7F5",
+    "#882122",
+    "#EF2E33",
+    "#614290",
+    "#7B99DF",
+    "#E3DB52",
+    "#189B8D",
+    "#0C4C8A",
+    "#F0572B",
+    "#D13076",
+    "#e5c3c6",
+    "#e1e9b7",
+    "#f96161",
+    "#bcd2d0",
+    "#d0b783",
+    "#fff8cb",
+    "#deffe0",
+    "#defbff",
+    "#ffeafc",
+    "#eee1ff",
+    "#fdfdfd",
+    "#cfdfc4",
+    "#fde2a3",
+    "#f6c2a8",
+    "#9aafc7",
+    "#ccd9ff",
+    "#ffe6e6",
+    "#d47761",
+    "#bfb6bf"
+  ]
+}

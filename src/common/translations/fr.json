@@ -1,0 +1,43 @@
+{
+  "title": "Démo de react-native-languages",
+  "current": "Le langage courant est \"{{language}}\"",
+  "new_issue": "Nouvelle demande",
+  "home": {
+    "my_assigned_issues": "Mes demandes assignées",
+    "my_issues": "Mes demandes soumises",
+    "my_watched_issues": "Mes demandes surveillées"
+  },
+  "issue": {
+    "creation": {
+      "issue_not_created": "Demande non créée",
+      "issue_need_subject": "Le sujet doit être renseigné"
+    }
+  },
+  "issues": {
+    "result": "Résultat",
+    "results": "Résultats"
+  },
+  "project": {
+    "creation": {
+      "project_not_created": "Projet non créé",
+      "identifier_has_already_been_taken": "L'identifiant est déjà utilisé"
+    }
+  },
+  "button": {
+    "ok": "OK",
+    "cancel": "Annuler",
+    "save": "Enregistrer"
+  },
+  "filter_status": {
+    "all": "Tous",
+    "opened": "Ouvert",
+    "equal": "Egal",
+    "different": "Différent",
+    "closed": "Fermé"
+  },
+  "bonjour": "Bonjour",
+  "bonsoir": "Bonsoir",
+  "none_feminin": "Aucune",
+  "none_masculin": "Aucun",
+  "date_format": "JJ/MM/AAAA"
+}

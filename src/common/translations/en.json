@@ -1,0 +1,43 @@
+{
+  "title": "react-native-languages demo",
+  "current": "The current language is \"{{language}}\"",
+  "new_issue": "New issue",
+  "home": {
+    "my_assigned_issues": "My assigned issues",
+    "my_issues": "My submitted issues",
+    "my_watched_issues": "My watched issues"
+  },
+  "issue": {
+    "creation": {
+      "issue_not_created": "Issue not created",
+      "issue_need_subject": "Subject needs to be filled"
+    }
+  },
+  "issues": {
+    "result": "Result",
+    "results": "Results"
+  },
+  "filter_status": {
+    "all": "All",
+    "opened": "Opened",
+    "equal": "Equal",
+    "different": "Different",
+    "closed": "Closed"
+  },
+  "project": {
+    "creation": {
+      "project_not_created": "Project not created",
+      "identifier_has_already_been_taken": "Identifier has already been taken"
+    }
+  },
+  "button": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "bonjour": "Hello",
+  "bonsoir": "Hello",
+  "none_feminin": "None",
+  "none_masculin": "None",
+  "date_format": "DD/MM/YYYY"
+}
