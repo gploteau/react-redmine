@@ -50,6 +50,7 @@ class IssuesScreen extends React.Component {
   state = {
     animatedFilterView: new Animated.Value(0),
     animatedFilterViewSubmitButton: new Animated.Value(0),
+    animatedFilterBarTop: new Animated.Value(0),
     filterViewSubmitButtonVisible: false,
     filterViewSubmitButtonGreen: false,
     currentContentOffsetY: 0,
@@ -80,6 +81,17 @@ class IssuesScreen extends React.Component {
   }
 
   _setCurrentOffset = e => {
+    if (this.state.currentContentOffsetY > e.nativeEvent.contentOffset.y) {
+      debug.trace("currentContentOffsetY up", e.nativeEvent.contentOffset.y);
+      if (this.state.filtersBarTop < 0)
+        this.setState({ filtersBarTop: e.nativeEvent.contentOffset.y });
+    } else if (
+      this.state.currentContentOffsetY < e.nativeEvent.contentOffset.y
+    ) {
+      debug.trace("currentContentOffsetY down", e.nativeEvent.contentOffset.y);
+      if (this.state.filtersBarTop > -60)
+        this.setState({ filtersBarTop: -e.nativeEvent.contentOffset.y });
+    }
     this.setState({ currentContentOffsetY: e.nativeEvent.contentOffset.y });
     if (
       e.nativeEvent.contentSize.height -
@@ -226,85 +238,60 @@ class IssuesScreen extends React.Component {
           />
         ) : null}
 
-        <LinearGradient
-          colors={["transparent", "rgba(30, 30, 30, 0.8)"]}
-          style={styles.linearGradient}
-        >
-          <View style={styles.bottomMenuCloseButtonContainer}>
-            <Icon.Button
-              style={{ height: 40, paddingLeft: 10, paddingRight: 7 }}
-              name="times"
-              size={23}
-              backgroundColor={null}
-              onPress={() =>
-                navigation.navigate("Home", {
-                  backSwiperIndex: params.backSwiperIndex
-                })
-              }
-            />
-          </View>
-          {!navigation.state.params.hideFilters ? (
-            <TouchableNativeFeedback
-              onPress={() => {
-                this._animateFiltersView(1);
-              }}
-            >
-              <Animated.View
-                style={[styles.bottomMenuFiltersContainer, filterViewStyles]}
+        <Animated.View style={styles.linearGradientView}>
+          <LinearGradient
+            colors={["transparent", "rgba(30, 30, 30, 0.8)"]}
+            style={styles.linearGradient}
+          >
+            <View style={styles.bottomMenuCloseButtonContainer}>
+              <Icon.Button
+                style={{ height: 40, paddingLeft: 10, paddingRight: 7 }}
+                name="times"
+                size={23}
+                backgroundColor={null}
+                onPress={() =>
+                  navigation.navigate("Home", {
+                    backSwiperIndex: params.backSwiperIndex
+                  })
+                }
+              />
+            </View>
+            {!navigation.state.params.hideFilters ? (
+              <TouchableNativeFeedback
+                onPress={() => {
+                  this._animateFiltersView(1);
+                }}
               >
-                <View>
-                  <Text style={styles.bottomMenuFiltersText}>Filtres</Text>
-                  <Text style={styles.bottomMenuFiltersTextDetails}>
-                    {pluralize(
-                      allIssues.total_count,
-                      i18n.t("issues.result"),
-                      i18n.t("issues.results")
-                    )}
-                  </Text>
+                <Animated.View
+                  style={[styles.bottomMenuFiltersContainer, filterViewStyles]}
+                >
                   <View>
-                    <ReduxForm name="filterIssuesForm">
-                      <Field.Group>
-                        <Field
-                          type="select"
-                          label="Statut"
-                          labelStyle={{ color: "#fff" }}
-                          default={0}
-                          data={others.filter_status}
-                          navigation={navigation}
-                          onValueChange={v => {
-                            this.setState({
-                              filterStatusId: v
-                            });
-
-                            let value = "*";
-                            if (v == 1) value = "open";
-                            if (v == 4) value = "closed";
-
-                            actions.setFormValue(
-                              {
-                                form: {
-                                  name: "filterIssuesForm"
-                                },
-                                name: "status_id"
-                              },
-                              value
-                            );
-                          }}
-                        />
-                        {this.state.filterStatusId == 2 ||
-                        this.state.filterStatusId == 3 ? (
+                    <Text style={styles.bottomMenuFiltersText}>Filtres</Text>
+                    <Text style={styles.bottomMenuFiltersTextDetails}>
+                      {pluralize(
+                        allIssues.total_count,
+                        i18n.t("issues.result"),
+                        i18n.t("issues.results")
+                      )}
+                    </Text>
+                    <View>
+                      <ReduxForm name="filterIssuesForm">
+                        <Field.Group>
                           <Field
                             type="select"
-                            default={1}
-                            data={others.issue_statuses.issue_statuses}
+                            label="Statut"
+                            labelStyle={{ color: "#fff" }}
+                            default={0}
+                            data={others.filter_status}
                             navigation={navigation}
                             onValueChange={v => {
                               this.setState({
-                                statusIdSelected: v
+                                filterStatusId: v
                               });
 
-                              let value =
-                                this.state.filterStatusId == 3 ? "!" + v : v;
+                              let value = "*";
+                              if (v == 1) value = "open";
+                              if (v == 4) value = "closed";
 
                               actions.setFormValue(
                                 {
@@ -317,58 +304,87 @@ class IssuesScreen extends React.Component {
                               );
                             }}
                           />
-                        ) : (
-                          []
-                        )}
-                      </Field.Group>
-                      <Field
-                        name="tracker_id"
-                        type="select"
-                        label="Tracker"
-                        labelStyle={{ color: "#fff" }}
-                        default={common.form["filterIssuesForm"].tracker_id}
-                        data={others.trackers.trackers}
-                        navigation={navigation}
-                      />
-                    </ReduxForm>
+                          {this.state.filterStatusId == 2 ||
+                          this.state.filterStatusId == 3 ? (
+                            <Field
+                              type="select"
+                              default={1}
+                              data={others.issue_statuses.issue_statuses}
+                              navigation={navigation}
+                              onValueChange={v => {
+                                this.setState({
+                                  statusIdSelected: v
+                                });
+
+                                let value =
+                                  this.state.filterStatusId == 3 ? "!" + v : v;
+
+                                actions.setFormValue(
+                                  {
+                                    form: {
+                                      name: "filterIssuesForm"
+                                    },
+                                    name: "status_id"
+                                  },
+                                  value
+                                );
+                              }}
+                            />
+                          ) : (
+                            []
+                          )}
+                        </Field.Group>
+                        <Field
+                          name="tracker_id"
+                          type="select"
+                          label="Tracker"
+                          labelStyle={{ color: "#fff" }}
+                          default={common.form["filterIssuesForm"].tracker_id}
+                          data={others.trackers.trackers}
+                          navigation={navigation}
+                        />
+                      </ReduxForm>
+                    </View>
                   </View>
-                </View>
-                {this.state.filterViewSubmitButtonVisible ? (
-                  <Animated.View
-                    style={{
-                      opacity: this.state.animatedFilterViewSubmitButton,
-                      position: "absolute",
-                      height: 50,
-                      width: 50,
-                      bottom: 15,
-                      right: 15,
-                      transform: [{ scale: interpolateFilterViewSubmitButton }]
-                    }}
-                  >
-                    <TouchableNativeFeedback
-                      onPress={() => {
-                        this._animateFiltersView(0);
+                  {this.state.filterViewSubmitButtonVisible ? (
+                    <Animated.View
+                      style={{
+                        opacity: this.state.animatedFilterViewSubmitButton,
+                        position: "absolute",
+                        height: 50,
+                        width: 50,
+                        bottom: 15,
+                        right: 15,
+                        transform: [
+                          { scale: interpolateFilterViewSubmitButton }
+                        ]
                       }}
                     >
-                      <Svg width="50" height="50" viewBox="0 0 50 50">
-                        <G transform="translate(-220.39838,-114.66395)">
-                          <Path
-                            fill={
-                              this.state.filterViewSubmitButtonGreen
-                                ? "#009900"
-                                : "#999"
-                            }
-                            d="m 244.33542,164.65639 c -1.60451,-0.10706 -2.58696,-0.22555 -3.77264,-0.455 -3.12747,-0.60523 -6.37567,-1.94522 -9.03492,-3.72721 -5.20778,-3.4898 -8.92392,-8.78602 -10.40611,-14.83073 -1.1233,-4.58113 -0.93533,-9.3718 0.54285,-13.83455 2.17206,-6.55767 6.94006,-11.9104 13.2083,-14.82809 5.67529,-2.64171 12.28636,-3.04336 18.22316,-1.10714 5.837,1.90366 10.65557,5.76185 13.84009,11.08163 0.4652,0.77713 1.37631,2.64045 1.72116,3.51997 1.93574,4.937 2.26689,10.35072 0.94567,15.45973 -1.54916,5.99046 -5.27799,11.20121 -10.4555,14.61077 -4.02522,2.65074 -8.51528,4.03121 -13.36883,4.11024 -0.64059,0.0104 -1.29004,0.0106 -1.44323,5.4e-4 z m 3.08108,-6.02668 c 3.13342,-0.32257 6.24653,-1.48063 8.85006,-3.29215 2.15146,-1.49699 4.12265,-3.59843 5.46496,-5.82607 2.69858,-4.47845 3.43568,-9.86537 2.04432,-14.94038 -0.70603,-2.57527 -1.99982,-5.03818 -3.75613,-7.15035 -0.22439,-0.26985 -0.7631,-0.84433 -1.19714,-1.27662 -3.16046,-3.14775 -7.16072,-5.02311 -11.67666,-5.47412 -0.33422,-0.0333 -1.12039,-0.0607 -1.74706,-0.0607 -0.62666,0 -1.41284,0.0273 -1.74706,0.0607 -4.52275,0.45169 -8.50584,2.31922 -11.67665,5.47475 -1.57576,1.56816 -2.68253,3.09464 -3.63557,5.01421 -1.36795,2.75532 -1.99544,5.43087 -1.99544,8.50836 0,2.52733 0.4058,4.68291 1.31571,6.98902 0.97631,2.47437 2.35426,4.56809 4.26789,6.48483 4.10177,4.10845 9.68306,6.0862 15.48877,5.48852 z m -11.25219,-11.39505 c -2.91444,-3.00211 -5.29899,-5.47323 -5.29899,-5.49135 0,-0.0545 4.21652,-4.12883 4.249,-4.10572 0.0165,0.0118 1.47361,1.50939 3.23797,3.32808 l 3.20793,3.30669 6.28698,-6.18793 c 3.45783,-3.40336 6.65222,-6.54682 7.09865,-6.98546 l 0.81168,-0.79754 2.06629,2.10018 c 1.13646,1.1551 2.05871,2.12013 2.04945,2.14453 -0.009,0.0244 -0.92835,0.94093 -2.04242,2.03675 -1.11407,1.09584 -3.41542,3.36055 -5.11413,5.03271 -1.6987,1.67215 -4.52439,4.45188 -6.2793,6.17718 -1.75491,1.7253 -3.592,3.53366 -4.08243,4.01859 l -0.89169,0.88169 -5.29899,-5.4584 z"
-                          />
-                        </G>
-                      </Svg>
-                    </TouchableNativeFeedback>
-                  </Animated.View>
-                ) : null}
-              </Animated.View>
-            </TouchableNativeFeedback>
-          ) : null}
-        </LinearGradient>
+                      <TouchableNativeFeedback
+                        onPress={() => {
+                          this._animateFiltersView(0);
+                        }}
+                      >
+                        <Svg width="50" height="50" viewBox="0 0 50 50">
+                          <G transform="translate(-220.39838,-114.66395)">
+                            <Path
+                              fill={
+                                this.state.filterViewSubmitButtonGreen
+                                  ? "#009900"
+                                  : "#999"
+                              }
+                              d="m 244.33542,164.65639 c -1.60451,-0.10706 -2.58696,-0.22555 -3.77264,-0.455 -3.12747,-0.60523 -6.37567,-1.94522 -9.03492,-3.72721 -5.20778,-3.4898 -8.92392,-8.78602 -10.40611,-14.83073 -1.1233,-4.58113 -0.93533,-9.3718 0.54285,-13.83455 2.17206,-6.55767 6.94006,-11.9104 13.2083,-14.82809 5.67529,-2.64171 12.28636,-3.04336 18.22316,-1.10714 5.837,1.90366 10.65557,5.76185 13.84009,11.08163 0.4652,0.77713 1.37631,2.64045 1.72116,3.51997 1.93574,4.937 2.26689,10.35072 0.94567,15.45973 -1.54916,5.99046 -5.27799,11.20121 -10.4555,14.61077 -4.02522,2.65074 -8.51528,4.03121 -13.36883,4.11024 -0.64059,0.0104 -1.29004,0.0106 -1.44323,5.4e-4 z m 3.08108,-6.02668 c 3.13342,-0.32257 6.24653,-1.48063 8.85006,-3.29215 2.15146,-1.49699 4.12265,-3.59843 5.46496,-5.82607 2.69858,-4.47845 3.43568,-9.86537 2.04432,-14.94038 -0.70603,-2.57527 -1.99982,-5.03818 -3.75613,-7.15035 -0.22439,-0.26985 -0.7631,-0.84433 -1.19714,-1.27662 -3.16046,-3.14775 -7.16072,-5.02311 -11.67666,-5.47412 -0.33422,-0.0333 -1.12039,-0.0607 -1.74706,-0.0607 -0.62666,0 -1.41284,0.0273 -1.74706,0.0607 -4.52275,0.45169 -8.50584,2.31922 -11.67665,5.47475 -1.57576,1.56816 -2.68253,3.09464 -3.63557,5.01421 -1.36795,2.75532 -1.99544,5.43087 -1.99544,8.50836 0,2.52733 0.4058,4.68291 1.31571,6.98902 0.97631,2.47437 2.35426,4.56809 4.26789,6.48483 4.10177,4.10845 9.68306,6.0862 15.48877,5.48852 z m -11.25219,-11.39505 c -2.91444,-3.00211 -5.29899,-5.47323 -5.29899,-5.49135 0,-0.0545 4.21652,-4.12883 4.249,-4.10572 0.0165,0.0118 1.47361,1.50939 3.23797,3.32808 l 3.20793,3.30669 6.28698,-6.18793 c 3.45783,-3.40336 6.65222,-6.54682 7.09865,-6.98546 l 0.81168,-0.79754 2.06629,2.10018 c 1.13646,1.1551 2.05871,2.12013 2.04945,2.14453 -0.009,0.0244 -0.92835,0.94093 -2.04242,2.03675 -1.11407,1.09584 -3.41542,3.36055 -5.11413,5.03271 -1.6987,1.67215 -4.52439,4.45188 -6.2793,6.17718 -1.75491,1.7253 -3.592,3.53366 -4.08243,4.01859 l -0.89169,0.88169 -5.29899,-5.4584 z"
+                            />
+                          </G>
+                        </Svg>
+                      </TouchableNativeFeedback>
+                    </Animated.View>
+                  ) : null}
+                </Animated.View>
+              </TouchableNativeFeedback>
+            ) : null}
+          </LinearGradient>
+        </Animated.View>
         {common.contentIsLoading ? (
           <ActivityIndicator style={{ margin: 10 }} />
         ) : null}

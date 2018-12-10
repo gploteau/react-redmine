@@ -72,7 +72,7 @@ class PrioritySettingScreen extends React.Component {
             }}
           >
             <Text style={styles.title}>Couleurs des priorités</Text>
-            {others.issue_priorities.issue_priorities.map(item => {
+            {others.issue_priorities.issue_priorities ? others.issue_priorities.issue_priorities.map(item => {
               return (
                 <Field
                   key={item.id}
@@ -82,7 +82,7 @@ class PrioritySettingScreen extends React.Component {
                   default={common.settings.colors.priorities[item.id]}
                 />
               );
-            })}
+            }) : <Text>Aucun données</Text>}
           </ReduxForm>
         </View>
       </View>

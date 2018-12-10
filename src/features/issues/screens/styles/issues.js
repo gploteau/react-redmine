@@ -51,11 +51,13 @@ export default StyleSheet.create({
     fontFamily: "Raleway-Bold",
     fontSize: 13
   },
-  linearGradient: {
+  linearGradientView: {
     position: "absolute",
     left: 0,
     right: 0,
-    bottom: 0,
+    bottom: 0
+  },
+  linearGradient: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingTop: 15

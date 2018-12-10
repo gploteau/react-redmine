@@ -72,7 +72,7 @@ class TrackerSettingScreen extends Component {
             }}
           >
             <Text style={styles.title}>Couleurs des trackers</Text>
-            {others.trackers.trackers.filter(item => item.id != 0).map(item => {
+            {others.trackers.trackers ? others.trackers.trackers.filter(item => item.id != 0).map(item => {
               return (
                 <Field
                   key={item.id}
@@ -82,7 +82,7 @@ class TrackerSettingScreen extends Component {
                   default={common.settings.colors.trackers[item.id]}
                 />
               );
-            })}
+            }) : <Text>Aucun données</Text>}
           </ReduxForm>
         </View>
       </View>
