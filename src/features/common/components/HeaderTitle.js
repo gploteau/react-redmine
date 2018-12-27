@@ -11,12 +11,15 @@ import {
   Animated,
   Platform,
   StatusBar,
-  TouchableOpacity
+  TouchableOpacity,
+  Keyboard,
+  UIManager,
+  findNodeHandle
 } from "react-native";
 import appConfig from "@src/app.json";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import Icon from "react-native-vector-icons/FontAwesome";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import * as issueActions from "@issues.redux/actions";
 
 const styles = StyleSheet.create({
@@ -34,21 +37,80 @@ const styles = StyleSheet.create({
   }
 });
 
-const CustomHeaderButton = props => {
-  return (
-    <TouchableOpacity activeOpacity={0.7} onPress={props.onPress}>
-      <View style={[{ marginTop: 5, width: 30 }, props.style]}>
-        <Icon
-          title={props.title}
-          size={30}
-          name={props.name}
-          style={props.iconStyle}
-          color="#fff"
-        />
-      </View>
-    </TouchableOpacity>
-  );
-};
+class CustomHeaderButton extends Component {
+  render() {
+    return (
+      <TouchableOpacity activeOpacity={0.7} onPress={this.props.onPress}>
+        <View style={[{ marginTop: 7, width: 30 }, this.props.style]}>
+          <Icon
+            title={this.props.title}
+            size={30}
+            name={this.props.name}
+            style={this.props.iconStyle}
+            color="#fff"
+          />
+        </View>
+      </TouchableOpacity>
+    );
+  }
+}
+
+class PopupMenu extends Component {
+  static propTypes = {
+    // array of strings, will be list items of Menu
+    actions: PropTypes.object.isRequired
+  };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      icon: null
+    };
+  }
+
+  onError() {
+    console.error("Popup Error");
+  }
+
+  onPress = () => {
+    if (this.state.icon) {
+      UIManager.showPopupMenu(
+        findNodeHandle(this.state.icon),
+        Object.keys(this.props.actions),
+        this.onError,
+        this.onPopupEvent
+      );
+    }
+  };
+
+  onPopupEvent = (eventName, index) => {
+    if (eventName !== "itemSelected") return;
+
+    var i = 0;
+    for (let p in this.props.actions) {
+      if (index == i) this.props.actions[p]();
+      i++;
+    }
+  };
+
+  render() {
+    return (
+      <CustomHeaderButton
+        name="more-vert"
+        title="More"
+        style={{ marginRight: 5 }}
+        onPress={this.onPress}
+        ref={this.onRef}
+      />
+    );
+  }
+
+  onRef = icon => {
+    if (!this.state.icon) {
+      this.setState({ icon });
+    }
+  };
+}
 
 class HeaderTitle extends Component {
   state = {
@@ -63,7 +125,8 @@ class HeaderTitle extends Component {
       duration: 500,
       toValue: animateSearch.__getValue() == 0 && !forceClose ? 1 : 0
     }).start();
-    this.searchInput.focus();
+    if (forceClose) Keyboard.dismiss();
+    else this.searchInput.focus();
   }
 
   _onLayout = e => {
@@ -78,12 +141,19 @@ class HeaderTitle extends Component {
         indexKey: 0
       });
       this.setState({ searchText: "" });
-      this.toggleSearchBar(true);
+      this.toggleSearchBar(null, true);
     }
   };
 
   render() {
     const { title, details, navigation } = this.props;
+    const { state } = navigation;
+
+    const popupMenu = state.routes[state.index].params
+      ? state.routes[state.index].params.popupMenu
+      : null;
+    console.log("TRACE HEADERTITLE", state.routes[state.index].params);
+
     return (
       <View
         onLayout={this._onLayout}
@@ -98,6 +168,7 @@ class HeaderTitle extends Component {
         }}
       >
         <StatusBar barStyle="light-content" backgroundColor="#7f1010" />
+
         <Animated.View
           style={{
             flexDirection: "row",
@@ -125,7 +196,7 @@ class HeaderTitle extends Component {
         >
           <View>
             <CustomHeaderButton
-              name="bars"
+              name="menu"
               title="Menu"
               style={{ marginLeft: 10 }}
               onPress={() => navigation.toggleDrawer()}
@@ -135,13 +206,21 @@ class HeaderTitle extends Component {
             <Text style={styles.title}>{title}</Text>
             <Text style={styles.details}>{details}</Text>
           </View>
-          <View style={{ position: "absolute", right: 5, top: 5 }}>
+          <View
+            style={{
+              position: "absolute",
+              right: 5,
+              top: 5,
+              flexDirection: "row"
+            }}
+          >
             <CustomHeaderButton
               name="search"
               title="Search"
               style={{ marginRight: 10 }}
               onPress={this.toggleSearchBar.bind(this)}
             />
+            {popupMenu ? <PopupMenu actions={popupMenu} /> : null}
           </View>
         </Animated.View>
         <Animated.View
@@ -179,10 +258,10 @@ class HeaderTitle extends Component {
         >
           <View>
             <CustomHeaderButton
-              name="times"
+              name="close"
               title="Close"
               style={{ marginLeft: 10 }}
-              onPress={this.toggleSearchBar.bind(this)}
+              onPress={this.toggleSearchBar.bind(this, true)}
             />
           </View>
           <View style={{ flex: 1, paddingTop: 5, paddingLeft: 5 }}>

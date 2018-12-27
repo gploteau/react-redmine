@@ -67,21 +67,5 @@ export default StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingTop: 15
-  },
-  attachedFile: {
-    padding: 12,
-    margin: 10,
-    marginTop: 0,
-    backgroundColor: "#AAA",
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  attachedFileText: {
-    color: "#333"
-  },
-  attachedFileBytes: {
-    position: "absolute",
-    right: 10,
-    fontSize: 10
   }
 });

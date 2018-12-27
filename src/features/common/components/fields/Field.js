@@ -70,7 +70,16 @@ class Field extends Component {
   }
 
   componentDidMount() {
-    //this._setValue(this.state.value);
+    if (this.props.name && this.props.default)
+      this.props.actions.setFormValue(
+        {
+          form: {
+            name: this.props.parent.props.name
+          },
+          name: this.props.name
+        },
+        this.props.default
+      );
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -200,7 +209,6 @@ class Field extends Component {
       value={this._defaultStringValue(this.state.value, this.default)}
       onAddImage={this._addImageToText}
       onChangeText={this._setValue}
-      onBlur={this.onBlur}
     >
       {this.props.label}
     </FloatingLabel>
@@ -214,7 +222,6 @@ class Field extends Component {
       style={styles.formInput}
       value={this._defaultStringValue(this.state.value, this.default)}
       onChangeText={this._setValue}
-      onBlur={this.onBlur}
     >
       {this.props.label}
     </FloatingLabel>

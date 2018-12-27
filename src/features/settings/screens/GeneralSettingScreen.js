@@ -64,7 +64,7 @@ class GeneralSettingScreen extends React.Component {
             />
             <Text style={styles.note}>
               {
-                "Veuillez noter que les images sont accessibles uniquement avec une connexion sécurisée."
+                "Veuillez noter que les suppressions sont accessibles uniquement avec une connexion sécurisée."
               }
             </Text>
             <Field

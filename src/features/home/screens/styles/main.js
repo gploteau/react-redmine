@@ -85,6 +85,7 @@ export default StyleSheet.create({
   },
   linkButton: {
     borderColor: appConfig.backgroundColor,
+    backgroundColor: "#fff",
     borderWidth: 1,
     borderRadius: 10,
     padding: 10,

@@ -17,7 +17,7 @@ import HeaderButtons, {
 import { HeaderTitle } from "@common.components";
 
 const styles = StyleSheet.create({
-  container: { paddingTop: 25 }
+  container: { flex: 1, paddingTop: 25 }
 });
 
 const CustomHeaderButton = props => (
@@ -45,6 +45,17 @@ class DrawerScreen extends Component {
             />
           </SafeAreaView>
         </ScrollView>
+        <Text
+          style={{
+            color: "#AAA",
+            fontSize: 10,
+            position: "absolute",
+            bottom: 5,
+            left: 5
+          }}
+        >
+          Redmine-React 2018
+        </Text>
       </View>
     );
   }

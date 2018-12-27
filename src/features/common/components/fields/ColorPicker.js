@@ -11,7 +11,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  TouchableHighlight,
   ScrollView,
   Animated,
   Easing,
@@ -184,7 +183,7 @@ class ColorPicker extends Component {
           onLongPress={() => (this.props.canReset ? this._handleReset() : null)}
         >
           <Text style={styles.buttonLabel}>{this.props.text}</Text>
-          <TouchableHighlight
+          <TouchableOpacity
             onPress={() => {
               this.setModalVisible(true);
             }}
@@ -198,7 +197,7 @@ class ColorPicker extends Component {
             }}
           >
             <View />
-          </TouchableHighlight>
+          </TouchableOpacity>
         </View>
       </View>
     );

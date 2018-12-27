@@ -30,6 +30,7 @@ import HeaderButtons, {
   HeaderButton,
   Item
 } from "react-navigation-header-buttons";
+import * as commonActions from "@common.redux/actions";
 import * as issueActions from "@issues.redux/actions";
 import * as projectsActions from "@projects.redux/actions";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -38,14 +39,14 @@ import {
   Preloader,
   ImageAutoSize,
   ReduxForm,
-  RalewayText
+  RalewayText,
+  LoadingButton
 } from "@common.components";
 import { FloatingLabel, Field } from "@common.components.fields";
 import { RefreshableList } from "@home.components";
 import LinearGradient from "react-native-linear-gradient";
 import HTMLView from "react-native-htmlview";
 import styles from "./styles/issue";
-import prettyBytes from "pretty-bytes";
 
 const htmlStyles = StyleSheet.create({
   indent: {
@@ -76,7 +77,6 @@ class IssueScreen extends Component {
 
     actions.clearIssue();
     if (Platform.OS === "android") {
-      removeAndroidBackButtonHandler();
       handleAndroidBackButton(() =>
         navigation.navigate("Issues", {
           scrollIndex: params.indexKey
@@ -88,7 +88,39 @@ class IssueScreen extends Component {
       id: params.issue_id,
       filter: { include: "attachments,watchers,journals,relations,children" }
     });
+
+    if (typeof navigation.setParams === "function")
+      navigation.setParams({
+        popupMenu: {
+          Modifier: this.modifyIssue,
+          Supprimer: this.deleteIssue
+        }
+      });
   }
+
+  modifyIssue = () => {
+    const { actions, navigation, issue } = this.props;
+    const { params } = navigation.state;
+
+    actions.setDefaultFormValue("newIssueForm", issue);
+
+    navigation.navigate("NewIssue", { issue: issue });
+  };
+
+  deleteIssue = () => {
+    const { actions, navigation } = this.props;
+    const { params } = navigation.state;
+
+    actions
+      .deleteIssue({
+        state: "issue",
+        id: params.issue_id
+      })
+      .then(() => {
+        actions.listIssues(params.req);
+        navigation.navigate("Issues");
+      });
+  };
 
   _onRefresh = () => {
     const { actions, navigation } = this.props;
@@ -187,32 +219,19 @@ class IssueScreen extends Component {
           });
         }
 
-        console.log(attachment);
-
         listAttachments.push(
-          <TouchableOpacity
+          <LoadingButton
             key={listAttachments.length}
-            style={styles.attachedFile}
-            onPress={() => {
-              return fetch(attachment.content_url)
-                .then(res => {
-                  console.log(res);
-                })
-                .catch(err => console.log(err));
-            }}
-          >
-            <RalewayText style={styles.attachedFileText}>
-              {attachment.filename}
-            </RalewayText>
-            <RalewayText style={styles.attachedFileBytes}>
-              {"(" + prettyBytes(attachment.filesize) + ")"}
-            </RalewayText>
-          </TouchableOpacity>
+            file={attachment}
+            fromUrl={attachment.content_url + "?key=" + common.settings.api}
+          />
         );
       });
     }
 
     const renderNode = (node, index, siblings, parent, defaultRenderer) => {
+      if (!node) return;
+
       if (node.name == "indent") {
         return (
           <Text
@@ -229,6 +248,8 @@ class IssueScreen extends Component {
         return <ImageAutoSize key={a.key} source={a.src} />;
       }
     };
+
+    console.log(output);
 
     return (
       <View style={styles.container}>
@@ -258,6 +279,7 @@ class IssueScreen extends Component {
                       })
                       .then(() => this._onRefresh());
                   }}
+                  style={{ paddingLeft: 0, paddingRight: 0 }}
                 >
                   <Field
                     name="status_id"
@@ -291,28 +313,12 @@ class IssueScreen extends Component {
                     value={output}
                     stylesheet={htmlStyles}
                     renderNode={renderNode}
-                    textComponentProps={{ style: { color: "#fff" } }}
+                    textComponentProps={{
+                      style: { color: "#fff" }
+                    }}
                   />
                 ) : null}
                 <View style={{ marginTop: 15 }}>{listAttachments}</View>
-                <View style={{ paddingTop: 20, paddingBottom: 20 }}>
-                  <Button
-                    style={{ marginTop: "auto" }}
-                    color={appConfig.backgroundColor}
-                    title="Supprimer"
-                    onPress={() =>
-                      actions
-                        .deleteIssue({
-                          state: "issue",
-                          id: navigation.state.params.issue_id
-                        })
-                        .then(() => {
-                          actions.listIssues(navigation.state.params.req);
-                          navigation.navigate("Issues");
-                        })
-                    }
-                  />
-                </View>
               </View>
             ) : null}
           </ScrollView>
@@ -330,7 +336,10 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({ ...issueActions, ...projectsActions }, dispatch)
+  actions: bindActionCreators(
+    { ...issueActions, ...projectsActions, ...commonActions },
+    dispatch
+  )
 });
 
 export default connect(

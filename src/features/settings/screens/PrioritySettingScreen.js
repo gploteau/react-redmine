@@ -21,7 +21,7 @@ import * as actions from "@common.redux/actions";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { HeaderTitle, ReduxForm } from "@common.components";
 import { FloatingLabel, Field } from "@common.components.fields";
-import { delay, debug } from "@common/helpers";
+import { calls, delay, debug, getObjProp } from "@common/helpers";
 
 const styles = StyleSheet.create({
   container: {
@@ -72,17 +72,24 @@ class PrioritySettingScreen extends React.Component {
             }}
           >
             <Text style={styles.title}>Couleurs des priorités</Text>
-            {others.issue_priorities.issue_priorities ? others.issue_priorities.issue_priorities.map(item => {
-              return (
-                <Field
-                  key={item.id}
-                  text={item.name}
-                  name={item.id}
-                  type="color"
-                  default={common.settings.colors.priorities[item.id]}
-                />
-              );
-            }) : <Text>Aucun données</Text>}
+            {others.issue_priorities.issue_priorities ? (
+              others.issue_priorities.issue_priorities.map(item => {
+                return (
+                  <Field
+                    key={item.id}
+                    text={item.name}
+                    name={item.id}
+                    type="color"
+                    default={calls(
+                      common.settings.colors.priorities[item.id],
+                      "#000"
+                    )}
+                  />
+                );
+              })
+            ) : (
+              <Text>Aucun données</Text>
+            )}
           </ReduxForm>
         </View>
       </View>

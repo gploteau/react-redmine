@@ -32,7 +32,12 @@ class Form extends Component {
     const children = this._getFields(this.props.children);
 
     return (
-      <ScrollView keyboardShouldPersistTaps={"handled"}>{children}</ScrollView>
+      <ScrollView
+        keyboardShouldPersistTaps={"handled"}
+        style={[{ paddingLeft: 5, paddingRight: 5 }, this.props.style]}
+      >
+        {children}
+      </ScrollView>
     );
   }
 }

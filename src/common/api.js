@@ -10,6 +10,8 @@ const _callApi = (settings, feature, resource, operation, args = {}) => {
         ? "_" + args.state.replace(/([A-Z]+)/g, "_$1").toUpperCase()
         : "");
 
+  debug.trace("_callApi.action_type", action_type);
+
   switch (operation) {
     case "DELETE":
       method = "DELETE";
@@ -28,11 +30,15 @@ const _callApi = (settings, feature, resource, operation, args = {}) => {
       method = "GET";
   }
 
+  debug.trace("_callApi.operation", operation);
+
   return dispatch => {
     dispatch({
       type: `${action_type}_BEGIN`,
       contentIsLoading: true
     });
+
+    debug.trace("_callApi.dispatch");
 
     const promise = new Promise((resolve, reject) => {
       var urlId = "";
@@ -61,8 +67,6 @@ const _callApi = (settings, feature, resource, operation, args = {}) => {
               .join("")
           : "");
 
-      console.log(url);
-
       const headers = {
         method: method,
         headers: {
@@ -79,14 +83,16 @@ const _callApi = (settings, feature, resource, operation, args = {}) => {
         try {
           const buffer = Buffer.from(args.file.data, "base64");
           headers["body"] = buffer;
+          debug.trace("_callApi.UPLOAD corps de la requete", buffer);
         } catch (e) {
-          debug.err(e);
+          debug.err("_callApi.UPLOAD.catch corps de la requete", e);
         }
       } else if (method != "GET") {
         try {
           headers["body"] = JSON.stringify(args.filter);
+          debug.trace("_callApi.GET corps de la requete", args.filter);
         } catch (e) {
-          debug.err(e);
+          debug.err("_callApi.GET.catch corps de la requete", e);
         }
       }
 
@@ -105,12 +111,15 @@ const _callApi = (settings, feature, resource, operation, args = {}) => {
         }
         if (data.state) data[data.state] = json;
         dispatch(data);
+        debug.trace("_callApi.dispatch", data);
+
+        debug.trace("_callApi.doSuccess.resolve", json);
         resolve(json);
       };
 
       const doError = err => {
         dispatch({
-          type: `${action_type}_FAILURE}`,
+          type: `${action_type}_FAILURE`,
           data: { error: err },
           contentIsLoading: false
         });
@@ -122,14 +131,21 @@ const _callApi = (settings, feature, resource, operation, args = {}) => {
               settings.url +
               " n'est pas joignable. Veuillez vérifier l'url renseignée dans vos paramètres."
           );
+        } else if (err == 413) {
+          Alert.alert(
+            "Request Entity Too Large",
+            "Le serveur où est hébergée votre application Redmine n'accepte pas l'envoi de fichier trop volumineux."
+          );
         } else if (err == 404) {
           Alert.alert(
             "Ressource introuvable",
             "La ressource que vous cherchez n'a pas été trouvée."
           );
         } else {
-          debug.error("_callApi.doError", err.message, err.stack);
+          //debug.warn("_callApi.doError", err);
         }
+
+        debug.trace("_callApi.doError", err);
 
         reject(err);
       };
@@ -138,9 +154,8 @@ const _callApi = (settings, feature, resource, operation, args = {}) => {
         .then(
           res => {
             if (res.status != 401) {
-              debug.trace("_callApi", res);
-              if (res.status == 404) doError(res.status);
-              else
+              debug.trace("_callApi", method, res);
+              if (res.status == 200 || res.status == 201 || res.status == 422) {
                 res
                   .text()
                   .then(text => {
@@ -152,6 +167,9 @@ const _callApi = (settings, feature, resource, operation, args = {}) => {
                     }
                   })
                   .catch(err => doError(err));
+              } else {
+                doError(res.status);
+              }
             } else {
               doError("Not Authorized");
             }
@@ -162,14 +180,18 @@ const _callApi = (settings, feature, resource, operation, args = {}) => {
           }
         )
         .catch(err => doError(err));
-    }).catch(err => {
-      if (err == "Not Authorized") {
-        Alert.alert(
-          "Erreur de connexion",
-          "Il est possible que votre clé API ne soit pas correcte."
-        );
-      }
-    });
+    }); //.catch(err => {
+    //   if (err == "Not Authorized") {
+    //     Alert.alert(
+    //       "Erreur de connexion",
+    //       "Il est possible que votre clé API ne soit pas correcte."
+    //     );
+    //   } else {
+    //     debug.trace("_callApi.promise.reject", err);
+    //     reject(err);
+    //     debug.trace("_callApi.promise.rejected", err);
+    //   }
+    // });
 
     return promise;
   };
@@ -256,24 +278,19 @@ export class api {
     switch (action.type) {
       case "COMMON_SET_PARAMETERS":
         this.settings = action.params;
-
         break;
+
       case `${this.feature.toUpperCase()}_${this.resource.toUpperCase()}_CLEAR_ALL`:
         ret[this.resource.toLowerCase()] = {};
-
         break;
+
       case `${this.feature.toUpperCase()}_${this.resource.toUpperCase()}_CLEAR`:
         ret[
           this.resource.toLowerCase().substr(0, this.resource.length - 1)
         ] = {};
-
         break;
+
       default:
-        // if (action.hasOwnProperty("contentIsLoading") &&
-        //     ret.hasOwnProperty(this.feature)) {
-        //       debug(ret);
-        //   ret.contentIsLoading = action.contentIsLoading;
-        // } else
         if (!state.hasOwnProperty(action.state)) {
           return state;
         }

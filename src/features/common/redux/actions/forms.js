@@ -1,5 +1,12 @@
 import { debug } from "@common/helpers";
 
+export function clearForm(formName) {
+  return {
+    type: "COMMON_FORMS_CLEAR",
+    formName: formName
+  };
+}
+
 export function setDefaultFormValue(formName, form) {
   return {
     type: "COMMON_FORMS_SET_DEFAULT",
@@ -65,6 +72,12 @@ export function reducer(state, action) {
 
     case "COMMON_FORMS_ADD_FILE":
       state.uploads.push(action.file);
+      return {
+        ...state
+      };
+
+    case "COMMON_FORMS_CLEAR":
+      state.form[action.formName] = {};
       return {
         ...state
       };

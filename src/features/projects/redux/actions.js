@@ -3,5 +3,6 @@ export {
   getProject,
   deleteProject,
   createProject,
-  clearProject
+  clearProject,
+  updateProject
 } from "@projects.actions/projects";

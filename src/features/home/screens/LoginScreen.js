@@ -90,9 +90,7 @@ class LoginScreen extends React.Component {
       .then(value => {
         debug.trace("LoginScreen._loadFeatures", "Get settings storage", value);
         if (!value) {
-          navigation.navigate("Settings", {
-            title: "Accueil"
-          });
+          navigation.navigate("First");
         } else {
           value = JSON.parse(value);
 

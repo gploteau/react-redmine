@@ -79,12 +79,21 @@ export function reducer(state, action) {
       debug.trace("common.reducer", action, state);
 
       if (action.type.substr(-5) === "BEGIN") {
+        debug.trace("common.reducer", "action.type = BEGIN");
         ++countPreloader;
         if (countPreloader == 1 && action.hasOwnProperty("contentIsLoading")) {
           state.isLoading = true;
           debug.trace("common.reducer", "start contentIsLoading");
         }
       } else if (action.type.substr(-7) === "SUCCESS") {
+        debug.trace("common.reducer", "action.type = SUCCESS");
+        --countPreloader;
+        if (countPreloader == 0 && action.hasOwnProperty("contentIsLoading")) {
+          state.isLoading = false;
+          debug.trace("common.reducer", "stop contentIsLoading");
+        }
+      } else if (action.type.substr(-7) === "FAILURE") {
+        debug.trace("common.reducer", "action.type = FAILURE");
         --countPreloader;
         if (countPreloader == 0 && action.hasOwnProperty("contentIsLoading")) {
           state.isLoading = false;

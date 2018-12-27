@@ -50,24 +50,30 @@ class NewIssueScreen extends Component {
     const { navigation } = this.props;
 
     if (Platform.OS === "android") {
-      removeAndroidBackButtonHandler();
       handleAndroidBackButton(() => navigation.goBack());
     }
   }
+
   render() {
     const { actions, home, navigation, common, projects, others } = this.props;
+    const { params } = navigation.state;
 
-    debug.trace("NewIssueScreen", projects.issue_categories);
+    const issue = params ? params.issue : null;
+    const project_id = params ? params.project_id : 1;
+
+    let projectId = issue ? issue.project.id : project_id;
 
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>{i18n.t("new_issue")}</Text>
+        <Text style={styles.welcome}>
+          {i18n.t("issue." + (issue ? "modify" : "new"))}
+        </Text>
         <ReduxForm name="newIssueForm">
           <Field
             name="project_id"
             type="select"
             label="Projet"
-            default={1}
+            default={projectId}
             data={getObjProp(projects.projects, "projects", [])}
             navigation={this.props.navigation}
             onValueChange={v => {
@@ -82,7 +88,7 @@ class NewIssueScreen extends Component {
             name="tracker_id"
             type="select"
             label="Tracker"
-            default={1}
+            default={issue ? issue.tracker.id : 1}
             data={getObjProp(others.trackers, "trackers", [])}
             navigation={this.props.navigation}
             onValueChange={v => {
@@ -102,7 +108,7 @@ class NewIssueScreen extends Component {
             type="select"
             label="Statut"
             forceValue={this.state.defaultStatusId}
-            default={this.state.defaultStatusId}
+            default={issue ? issue.status.id : this.state.defaultStatusId}
             data={getObjProp(others.issue_statuses, "issue_statuses", [])}
             navigation={this.props.navigation}
           />
@@ -110,11 +116,16 @@ class NewIssueScreen extends Component {
             name="priority_id"
             type="select"
             label="Priorité"
-            default={2}
+            default={issue ? issue.priority.id : 2}
             data={getObjProp(others.issue_priorities, "issue_priorities", [])}
             navigation={this.props.navigation}
           />
-          <Field name="subject" type="text" label="Sujet" />
+          <Field
+            name="subject"
+            type="text"
+            label="Sujet"
+            default={issue ? issue.subject : ""}
+          />
           <Field
             name="description"
             type="text"
@@ -122,6 +133,7 @@ class NewIssueScreen extends Component {
             multiline={true}
             numberOfLines={3}
             canAddImage={true}
+            default={issue ? issue.description : ""}
           />
           <Field
             name="category_id"
@@ -139,12 +151,14 @@ class NewIssueScreen extends Component {
               type="datetime"
               label="Début"
               format="YYYY-MM-DD"
+              default={issue ? issue.start_date : ""}
             />
             <Field
               name="due_date"
               type="datetime"
               label="Echéance"
               format="YYYY-MM-DD"
+              default={issue ? issue.due_date : ""}
             />
           </Field.Group>
           <Field
@@ -155,11 +169,12 @@ class NewIssueScreen extends Component {
             itemLabel={item => item.firstname + " " + item.lastname}
             navigation={this.props.navigation}
             addNoneItem={true}
+            default={issue && issue.assigned_to ? issue.assigned_to.id : ""}
           />
           <Field
             type="submit"
             buttonStyle={{ backgroundColor: "#c97e7e" }}
-            label="Créer"
+            label={issue ? "Modifier" : "Créer"}
             onPress={formName => {
               if (!common.form[formName].subject) {
                 Alert.alert(
@@ -176,33 +191,66 @@ class NewIssueScreen extends Component {
                 return;
               }
 
-              const createIssue = () =>
-                actions
-                  .createIssue({
-                    filter: {
-                      issue: common.form[formName]
-                    }
-                  })
-                  .then(() => {
-                    actions.listIssues({
-                      state: "issuesAuthorMe",
-                      filter: { author_id: "me" }
-                    });
-                    navigation.goBack();
-                  })
-                  .catch(err => {
-                    Alert.alert(
-                      i18n.t("issue.creation.issue_not_created"),
-                      i18n.t("issue.creation." + identify(err[0])),
-                      [
-                        {
-                          text: i18n.t("button.ok"),
-                          onPress: () => console.log("OK Pressed")
+              const updateOrCreateIssue = issue
+                ? () =>
+                    actions
+                      .updateIssue({
+                        id: issue.id,
+                        filter: {
+                          issue: common.form[formName]
                         }
-                      ],
-                      { cancelable: false }
-                    );
-                  });
+                      })
+                      .then(() => {
+                        actions.getIssue({
+                          state: "issue",
+                          id: issue.id,
+                          filter: {
+                            include:
+                              "attachments,watchers,journals,relations,children"
+                          }
+                        });
+                        navigation.goBack();
+                      })
+                      .catch(err => {
+                        Alert.alert(
+                          i18n.t("issue.creation.issue_not_created"),
+                          i18n.t("issue.creation." + identify(err[0])),
+                          [
+                            {
+                              text: i18n.t("button.ok"),
+                              onPress: () => console.log("OK Pressed")
+                            }
+                          ],
+                          { cancelable: false }
+                        );
+                      })
+                : () =>
+                    actions
+                      .createIssue({
+                        filter: {
+                          issue: common.form[formName]
+                        }
+                      })
+                      .then(() => {
+                        actions.listIssues({
+                          state: "issuesAuthorMe",
+                          filter: { author_id: "me" }
+                        });
+                        navigation.goBack();
+                      })
+                      .catch(err => {
+                        Alert.alert(
+                          i18n.t("issue.creation.issue_not_created"),
+                          i18n.t("issue.creation." + identify(err[0])),
+                          [
+                            {
+                              text: i18n.t("button.ok"),
+                              onPress: () => console.log("OK Pressed")
+                            }
+                          ],
+                          { cancelable: false }
+                        );
+                      });
 
               if (common.uploads.length) {
                 const uploadFileLoop = int => {
@@ -212,13 +260,17 @@ class NewIssueScreen extends Component {
                       file: common.uploads[int]
                     })
                     .then(() => {
+                      common.uploads.slice(1);
                       if (int > 0) uploadFileLoop(int - 1);
-                      else createIssue();
+                      else updateOrCreateIssue();
+                    })
+                    .catch(err => {
+                      console.log(err);
                     });
                 };
                 uploadFileLoop(common.uploads.length - 1);
               } else {
-                createIssue();
+                updateOrCreateIssue();
               }
             }}
           />

@@ -3,6 +3,8 @@ package com.gploteau.redmine;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.vinzscam.reactnativefileviewer.RNFileViewerPackage;
+import com.rnfs.RNFSPackage;
 import com.horcrux.svg.SvgPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.imagepicker.ImagePickerPackage;
@@ -32,6 +34,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNFileViewerPackage(),
+            new RNFSPackage(),
             new SvgPackage(),
             new ReactNativePushNotificationPackage(),
             new ImagePickerPackage(),

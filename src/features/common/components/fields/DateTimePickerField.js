@@ -29,7 +29,7 @@ class DateTimePickerField extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedDate: i18n.t("date_format"),
+      selectedDate: this.props.default || i18n.t("date_format"),
       isDateTimePickerVisible: false
     };
   }
@@ -42,9 +42,14 @@ class DateTimePickerField extends Component {
         <TouchableOpacity
           onPress={this._showDateTimePicker}
           onLongPress={this._handleReset}
+          delayLongPress={1000}
         >
           <View style={styles.dateTimeButton}>
-            <Text style={styles.labelInput}>{selectedDate}</Text>
+            <Text style={styles.labelInput}>
+              {selectedDate != i18n.t("date_format")
+                ? Moment(new Date(selectedDate)).format("DD/MM/YYYY")
+                : selectedDate}
+            </Text>
           </View>
         </TouchableOpacity>
 
@@ -52,6 +57,11 @@ class DateTimePickerField extends Component {
           isVisible={isDateTimePickerVisible}
           onConfirm={this._handleDatePicked}
           onCancel={this._hideDateTimePicker}
+          date={
+            selectedDate != i18n.t("date_format")
+              ? new Date(selectedDate)
+              : new Date()
+          }
         />
       </View>
     );
@@ -62,7 +72,7 @@ class DateTimePickerField extends Component {
   _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
   _handleDatePicked = date => {
-    this.setState({ selectedDate: Moment(date).format("DD/MM/YYYY") });
+    this.setState({ selectedDate: Moment(date).format("YYYY-MM-DD") });
     if (typeof this.props.onChange === "function")
       this.props.onChange(
         Moment(date).format(

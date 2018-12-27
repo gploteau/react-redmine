@@ -5,12 +5,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import appConfig from "@src/app.json";
 import i18n from "@common/i18n";
-import {
-  handleAndroidBackButton,
-  removeAndroidBackButtonHandler,
-  exitAlert,
-  debug
-} from "@common/helpers";
+import { handleAndroidBackButton, exitAlert, debug } from "@common/helpers";
 import {
   Platform,
   Text,
@@ -144,7 +139,7 @@ class MainScreen extends React.Component {
                 <TouchableMainButton
                   nav={navigation}
                   params={{
-                    state: "issuesAssignedToMe",
+                    state: "issues",
                     filter: { assigned_to_id: "me" }
                   }}
                   label={i18n.t("home.my_assigned_issues")}
@@ -153,7 +148,7 @@ class MainScreen extends React.Component {
                 <TouchableMainButton
                   nav={navigation}
                   params={{
-                    state: "issuesAuthorMe",
+                    state: "issues",
                     filter: { author_id: "me" }
                   }}
                   label={i18n.t("home.my_issues")}
@@ -162,7 +157,7 @@ class MainScreen extends React.Component {
                 <TouchableMainButton
                   nav={navigation}
                   params={{
-                    state: "issuesWatcherMe",
+                    state: "issues",
                     filter: { watcher_id: "me" }
                   }}
                   label={i18n.t("home.my_watched_issues")}
@@ -216,74 +211,66 @@ class MainScreen extends React.Component {
                   Mes rapports personnalisés
                 </Text>
                 {others.queries.total_count
-                  ? others.queries.queries.map(
-                      (query, i) =>
-                        !query.is_public ? (
-                          <TouchableNativeFeedback
-                            key={i}
-                            useForeground
-                            onPress={() =>
-                              setTimeout(() => {
-                                navigation.navigate("Issues", {
-                                  req: {
-                                    state: "issues",
-                                    filter: { query_id: query.id }
-                                  },
-                                  hideFilters: true,
-                                  backSwiperIndex: this.state
-                                    .swiperCurrentIndex,
-                                  scrollIndex: 0
-                                });
-                              }, 0)
-                            }
-                            background={TouchableNativeFeedback.Ripple(
-                              "#b77c7c"
-                            )}
-                          >
-                            <View style={styles.linkButton}>
-                              <Text style={[styles.h4, styles.link]}>
-                                {query.name}
-                              </Text>
-                            </View>
-                          </TouchableNativeFeedback>
-                        ) : null
+                  ? others.queries.queries.map((query, i) =>
+                      !query.is_public ? (
+                        <TouchableNativeFeedback
+                          key={i}
+                          useForeground
+                          onPress={() =>
+                            setTimeout(() => {
+                              navigation.navigate("Issues", {
+                                req: {
+                                  state: "issues",
+                                  filter: { query_id: query.id }
+                                },
+                                hideFilters: true,
+                                backSwiperIndex: this.state.swiperCurrentIndex,
+                                scrollIndex: 0
+                              });
+                            }, 0)
+                          }
+                          background={TouchableNativeFeedback.Ripple("#b77c7c")}
+                        >
+                          <View style={styles.linkButton}>
+                            <Text style={[styles.h4, styles.link]}>
+                              {query.name}
+                            </Text>
+                          </View>
+                        </TouchableNativeFeedback>
+                      ) : null
                     )
                   : null}
                 <Text style={[styles.h4, { marginTop: 25 }]}>
                   Rapports personnalisés
                 </Text>
                 {others.queries.total_count
-                  ? others.queries.queries.map(
-                      (query, i) =>
-                        query.is_public ? (
-                          <TouchableNativeFeedback
-                            key={i}
-                            useForeground
-                            onPress={() =>
-                              setTimeout(() => {
-                                navigation.navigate("Issues", {
-                                  req: {
-                                    state: "issues",
-                                    filter: { query_id: query.id }
-                                  },
-                                  hideFilters: true,
-                                  backSwiperIndex: this.state
-                                    .swiperCurrentIndex,
-                                  scrollIndex: 0
-                                });
-                              }, 0)
-                            }
-                            background={TouchableNativeFeedback.Ripple(
-                              "#b77c7c"
-                            )}
-                          >
-                            <View style={styles.linkButton}>
-                              <Text style={[styles.h4, styles.link]}>
-                                {query.name}
-                              </Text>
-                            </View>
-                          </TouchableNativeFeedback>
-                        ) : null
+                  ? others.queries.queries.map((query, i) =>
+                      query.is_public ? (
+                        <TouchableNativeFeedback
+                          key={i}
+                          useForeground
+                          onPress={() =>
+                            setTimeout(() => {
+                              navigation.navigate("Issues", {
+                                req: {
+                                  state: "issues",
+                                  filter: { query_id: query.id }
+                                },
+                                hideFilters: true,
+                                backSwiperIndex: this.state.swiperCurrentIndex,
+                                scrollIndex: 0
+                              });
+                            }, 0)
+                          }
+                          background={TouchableNativeFeedback.Ripple("#b77c7c")}
+                        >
+                          <View style={styles.linkButton}>
+                            <Text style={[styles.h4, styles.link]}>
+                              {query.name}
+                            </Text>
+                          </View>
+                        </TouchableNativeFeedback>
+                      ) : null
                     )
                   : null}
                 <View style={{ height: 60 }} />

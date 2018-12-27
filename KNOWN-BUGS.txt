@@ -1,0 +1,1 @@
+20181223 - can't select text, copy or paste from TextInput in the GeneralSettingScreen

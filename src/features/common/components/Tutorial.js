@@ -9,7 +9,7 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableHighlight
+  TouchableOpacity
 } from "react-native";
 import { debug } from "@common/helpers";
 import { Cross } from "@common.components.svg";
@@ -71,14 +71,14 @@ class Tutorial extends Component {
           }}
         >
           <View style={{ position: "absolute", top: 25, right: 25 }}>
-            <TouchableHighlight
+            <TouchableOpacity
               useForeground
               onPress={() => {
                 this.setModalVisible(false);
               }}
             >
               <Cross />
-            </TouchableHighlight>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>

@@ -58,20 +58,38 @@ class IssuesScreen extends React.Component {
     statusIdSelected: 1
   };
 
+  updateAndroidBackButton = handle => {
+    const { actions, navigation, common, issues } = this.props;
+    const { params } = navigation.state;
+
+    if (handle)
+      debug.trace("IssuesScreen.updateAndroidBackButton defined custom handle");
+
+    if (Platform.OS === "android") {
+      handleAndroidBackButton(
+        typeof handle === "function"
+          ? handle
+          : () => {
+              navigation.navigate(
+                params.backScreen ? params.backScreen.screen : "Home",
+                params.backScreen
+                  ? params.backScreen.params
+                  : {
+                      backSwiperIndex: params.backSwiperIndex
+                    }
+              );
+            }
+      );
+    }
+  };
+
   componentDidMount() {
     const { actions, navigation, common, issues } = this.props;
     const { params } = navigation.state;
 
     actions.clearIssues();
 
-    if (Platform.OS === "android") {
-      removeAndroidBackButtonHandler();
-      handleAndroidBackButton(() =>
-        navigation.navigate("Home", {
-          backSwiperIndex: params.backSwiperIndex
-        })
-      );
-    }
+    this.updateAndroidBackButton();
 
     const allIssues = params.req.state ? issues[params.req.state] : null;
 
@@ -113,22 +131,31 @@ class IssuesScreen extends React.Component {
   };
 
   _animateFiltersView = value => {
-    if (this.state.filterViewSubmitButtonVisible && value) return;
-    this.state.animatedFilterView.setValue(value ? 0 : 1);
+    if (this.state.filterViewSubmitButtonVisible && value > 0) return;
+    this.state.animatedFilterView.setValue(value > 0 ? 0 : 1);
 
     if (value) {
-      this.setState({ filterViewSubmitButtonVisible: true });
+      this.updateAndroidBackButton(() => {
+        this._animateFiltersView(-1);
+      });
+      this.setState({
+        filterViewSubmitButtonVisible: value == -1 ? false : true
+      });
       Animated.sequence([
         Animated.spring(this.state.animatedFilterView, {
-          toValue: 1
+          toValue: value > 0 ? 1 : 0,
+          friction: value > 0 ? 6 : 8,
+          tension: value > 0 ? 20 : 30
         }),
         Animated.spring(this.state.animatedFilterViewSubmitButton, {
-          toValue: 1,
+          toValue: value > 0 ? 1 : 0,
           friction: 4,
           tension: 10
         })
       ]).start();
     } else {
+      this.updateAndroidBackButton();
+
       this.setState({ filterViewSubmitButtonGreen: true });
 
       const { actions, navigation, common } = this.props;
@@ -213,9 +240,7 @@ class IssuesScreen extends React.Component {
       });
     }
 
-    const allIssues = navigation.state.params.req.state
-      ? issues[navigation.state.params.req.state]
-      : null;
+    const allIssues = params.req.state ? issues[params.req.state] : null;
 
     return (
       <View style={styles.container}>
@@ -231,7 +256,7 @@ class IssuesScreen extends React.Component {
                 : []
             }
             fetchData={() => {
-              return actions.listIssues(navigation.state.params.req);
+              return actions.listIssues(params.req);
             }}
             navigation={navigation}
             options={{ colors: common.settings.colors }}
@@ -250,13 +275,18 @@ class IssuesScreen extends React.Component {
                 size={23}
                 backgroundColor={null}
                 onPress={() =>
-                  navigation.navigate("Home", {
-                    backSwiperIndex: params.backSwiperIndex
-                  })
+                  navigation.navigate(
+                    params.backScreen ? params.backScreen.screen : "Home",
+                    params.backScreen
+                      ? params.backScreen.params
+                      : {
+                          backSwiperIndex: params.backSwiperIndex
+                        }
+                  )
                 }
               />
             </View>
-            {!navigation.state.params.hideFilters ? (
+            {!params.hideFilters ? (
               <TouchableNativeFeedback
                 onPress={() => {
                   this._animateFiltersView(1);

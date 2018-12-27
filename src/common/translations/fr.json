@@ -1,13 +1,14 @@
 {
   "title": "Démo de react-native-languages",
   "current": "Le langage courant est \"{{language}}\"",
-  "new_issue": "Nouvelle demande",
   "home": {
     "my_assigned_issues": "Mes demandes assignées",
     "my_issues": "Mes demandes soumises",
     "my_watched_issues": "Mes demandes surveillées"
   },
   "issue": {
+    "new": "Nouvelle demande",
+    "modify": "Modifier une demande",
     "creation": {
       "issue_not_created": "Demande non créée",
       "issue_need_subject": "Le sujet doit être renseigné"
@@ -18,6 +19,8 @@
     "results": "Résultats"
   },
   "project": {
+    "new": "Nouveau projet",
+    "modify": "Modifier un projet",
     "creation": {
       "project_not_created": "Projet non créé",
       "identifier_has_already_been_taken": "L'identifiant est déjà utilisé"

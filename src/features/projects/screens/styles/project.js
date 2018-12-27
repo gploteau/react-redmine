@@ -33,9 +33,29 @@ export default StyleSheet.create({
   description: {
     color: "#EEE",
     fontFamily: "Raleway-Regular",
-    fontSize: 16
+    fontSize: 16,
+    margin: 10
   },
   bold: {
     fontFamily: "Raleway-Bold"
+  },
+  h4: {
+    color: "#333333",
+    fontFamily: "Raleway-Bold",
+    fontSize: 15,
+    margin: 10
+  },
+  link: {
+    color: "#AAA",
+    fontSize: 17,
+    margin: 0
+  },
+  linkButton: {
+    borderColor: "#AAA",
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+    margin: 10,
+    marginBottom: 5
   }
 });

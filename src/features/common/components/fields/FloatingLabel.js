@@ -15,7 +15,7 @@ import {
   View,
   Platform,
   ViewPropTypes,
-  TouchableHighlight
+  TouchableOpacity
 } from "react-native";
 
 var textPropTypes = Text.propTypes || ViewPropTypes;
@@ -200,12 +200,12 @@ var FloatingLabel = createReactClass({
         <View>
           {this._renderLabel()}
           {this.props.onAddImage ? (
-            <TouchableHighlight
+            <TouchableOpacity
               style={iconStyleObj}
               onPress={this._showImagePicker}
             >
               <Icon name="image" color="#333" size={25} />
-            </TouchableHighlight>
+            </TouchableOpacity>
           ) : null}
         </View>
         <TextInput {...props} />

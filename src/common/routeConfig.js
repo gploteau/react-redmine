@@ -33,6 +33,7 @@ import HeaderButtons, {
 import {
   MainScreen,
   LoginScreen,
+  FirstScreen,
   CalendarScreen,
   DrawerScreen
 } from "@home.screens";
@@ -134,7 +135,6 @@ const SettingsNavigator = createMaterialTopTabNavigator(
   },
   {
     tabBarOptions: {
-      initialRouteName: "General",
       scrollEnabled: true,
       labelStyle: {
         fontSize: 12,
@@ -244,7 +244,8 @@ const RootNavigator = createStackNavigator(
     NewProject: {
       screen: NewProjectScreen
     },
-    Login: { screen: LoginScreen }
+    Login: { screen: LoginScreen },
+    First: { screen: FirstScreen }
   },
   {
     initialRouteName: "Login",

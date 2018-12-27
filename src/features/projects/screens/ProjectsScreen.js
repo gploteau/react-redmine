@@ -28,7 +28,6 @@ class ProjectsScreen extends React.Component {
     const { actions, navigation } = this.props;
 
     if (Platform.OS === "android") {
-      removeAndroidBackButtonHandler();
       handleAndroidBackButton(() => navigation.navigate("Home"));
     }
 

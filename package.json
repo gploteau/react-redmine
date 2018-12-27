@@ -1,62 +1,66 @@
 {
-	"name": "redmine",
-	"version": "1.0.0",
-	"private": true,
-	"scripts": {
-		"start": "node node_modules/react-native/local-cli/cli.js start",
-		"test": "jest"
-	},
-	"dependencies": {
-		"autobind-decorator": "^2.1.0",
-		"base-64": "^0.1.0",
-		"buffer": "^5.2.1",
-		"feathers": "^2.2.4",
-		"feathers-authentication-client": "^0.3.3",
-		"feathers-hooks": "^2.1.2",
-		"feathers-socketio": "^2.0.1",
-		"i18n-js": "^3.0.11",
-		"moment": "^2.22.2",
-		"pretty-bytes": "^5.1.0",
-		"react": "16.4.1",
-		"react-native": "0.56.0",
-		"react-native-action-button": "^2.8.5",
-		"react-native-base64": "0.0.2",
-		"react-native-falling-drawer": "^1.0.2",
-		"react-native-htmlview": "^0.13.0",
-		"react-native-image-picker": "^0.27.1",
-		"react-native-languages": "^3.0.1",
-		"react-native-linear-gradient": "^2.4.2",
-		"react-native-modal-datetime-picker": "^6.0.0",
-		"react-native-push-notification": "^3.1.1",
-		"react-native-splash-screen": "^3.1.1",
-		"react-native-svg": "^8.0.8",
-		"react-native-svg-uri": "^1.2.3",
-		"react-native-swiper": "^1.5.13",
-		"react-native-vector-icons": "^5.0.0",
-		"react-navigation": "^2.12.1",
-		"react-navigation-header-buttons": "^2.1.0",
-		"react-navigation-redux-helpers": "^2.0.5",
-		"react-redux": "^5.0.7",
-		"redux": "^4.0.0",
-		"redux-logger": "^3.0.6",
-		"redux-thunk": "^2.3.0",
-		"socket.io-client": "^2.1.1"
-	},
-	"devDependencies": {
-		"babel-cli": "^6.26.0",
-		"babel-jest": "23.4.2",
-		"babel-preset-flow": "^6.23.0",
-		"babel-preset-react-native": "^5",
-		"flow-bin": "^0.75.0",
-		"jest": "23.4.2",
-		"react-test-renderer": "16.4.1"
-	},
-	"jest": {
-		"preset": "react-native"
-	},
-	"rnpm": {
-		"assets": [
-			"./assets/fonts"
-		]
-	}
+  "name": "redmine",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest",
+    "flow": "flow"
+  },
+  "dependencies": {
+    "autobind-decorator": "^2.1.0",
+    "base-64": "^0.1.0",
+    "buffer": "^5.2.1",
+    "feathers": "^2.2.4",
+    "feathers-authentication-client": "^0.3.3",
+    "feathers-hooks": "^2.1.2",
+    "feathers-socketio": "^2.0.1",
+    "i18n-js": "^3.0.11",
+    "moment": "^2.22.2",
+    "pretty-bytes": "^5.1.0",
+    "react": "16.4.1",
+    "react-native": "0.56.0",
+    "react-native-action-button": "^2.8.5",
+    "react-native-base64": "0.0.2",
+    "react-native-falling-drawer": "^1.0.2",
+    "react-native-file-viewer": "^1.0.10",
+    "react-native-fs": "^2.13.3",
+    "react-native-htmlview": "^0.13.0",
+    "react-native-image-picker": "^0.27.1",
+    "react-native-languages": "^3.0.1",
+    "react-native-linear-gradient": "^2.4.2",
+    "react-native-modal-datetime-picker": "^6.0.0",
+    "react-native-popup-menu": "^0.14.2",
+    "react-native-push-notification": "^3.1.1",
+    "react-native-splash-screen": "^3.1.1",
+    "react-native-svg": "^8.0.8",
+    "react-native-svg-uri": "^1.2.3",
+    "react-native-swiper": "^1.5.13",
+    "react-native-vector-icons": "^5.0.0",
+    "react-navigation": "^2.12.1",
+    "react-navigation-header-buttons": "^2.1.0",
+    "react-navigation-redux-helpers": "^2.0.5",
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.0",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.3.0",
+    "socket.io-client": "^2.1.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-jest": "23.4.2",
+    "babel-preset-flow": "^6.23.0",
+    "babel-preset-react-native": "^5",
+    "flow-bin": "^0.75.0",
+    "jest": "23.4.2",
+    "react-test-renderer": "16.4.1"
+  },
+  "jest": {
+    "preset": "react-native"
+  },
+  "rnpm": {
+    "assets": [
+      "./assets/fonts"
+    ]
+  }
 }

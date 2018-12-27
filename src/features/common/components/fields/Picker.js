@@ -155,20 +155,6 @@ class Picker extends Component {
               }}
             >
               <ScrollView>{children}</ScrollView>
-
-              <TouchableOpacity
-                style={[
-                  styles.button,
-                  this.props.buttonStyle,
-                  styles.buttonCancel
-                ]}
-                {...this.props}
-                onPress={() => {
-                  this.setModalVisible(false);
-                }}
-              >
-                <Text style={styles.buttonTextCancel}>Annuler</Text>
-              </TouchableOpacity>
             </Animated.View>
           </TouchableOpacity>
         </Modal>
@@ -178,6 +164,7 @@ class Picker extends Component {
           onPress={() => {
             this.setModalVisible(true);
           }}
+          delayLongPress={1000}
           onLongPress={() => (this.props.canReset ? this._handleReset() : null)}
         >
           <Text style={styles.buttonLabel}>
