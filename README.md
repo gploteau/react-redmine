@@ -9,23 +9,23 @@
 ### Installation
 
 ```sh
-$ git clone https://github.com/gopete/react-redmine.git
-$ cd react-redmine
+git clone https://github.com/gopete/react-redmine.git
+cd react-redmine
 ```
 
 #### Using npm:
 ```sh
-$ npm install
+npm install
 ```
 
 #### Using yarn:
 
 ```sh
-$ yarn install
+yarn install
 ```
 
 ### Usage
 
 ```sh
-$ react-native run-android
+react-native run-android
 ```
