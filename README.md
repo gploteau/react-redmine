@@ -9,7 +9,7 @@
 ### Installation
 
 ```sh
-git clone https://github.com/gopete/react-redmine.git
+git clone https://github.com/gploteau/react-redmine.git
 cd react-redmine
 ```
 
